@@ -3,6 +3,7 @@ import time
 import sys
 import pandas as pd
 import numpy as np
+import os
 
 import covbat as cb
 
@@ -21,8 +22,8 @@ modelStr = sys.argv[2]
 numerColNameStr = sys.argv[3]
 numerColName = [x.strip() for x in numerColNameStr.split(",")]
 
-covTbl = pd.read_table('./tempCovbatFiles/covarTbl.txt', index_col=0)
-fcDat = pd.read_table('./tempCovbatFiles/tempfcData.txt', index_col=0)
+covTbl = pd.read_table(os.path.join('.', 'tempCovbatFiles', 'covarTbl.txt'), index_col=0)
+fcDat = pd.read_table(os.path.join('.', 'tempCovbatFiles', 'tempfcData.txt'), index_col=0)
 
 mod = patsy.dmatrix(modelStr, covTbl, return_type="dataframe")
 
@@ -31,4 +32,4 @@ mod = patsy.dmatrix(modelStr, covTbl, return_type="dataframe")
 ebat = cb.covbat(fcDat, covTbl[batchVarName], mod, numerColName)
 
 
-ebat.to_csv("./tempCovbatFiles/matlabCovBat_FC_output.txt", sep="\t") # save Python output
+ebat.to_csv(os.path.join('.', 'tempCovbatFiles', 'matlabCovBat_FC_output.txt'), sep="\t") # save Python output
