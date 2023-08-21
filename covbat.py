@@ -3,6 +3,9 @@ All functions except covbat are forked from
 https://github.com/brentp/combat.py
 combat function modified to enable correction without empirical Bayes
 covbat function written by Andrew Chen (andrewac@pennmedicine.upenn.edu)
+
+2023Aug21: Covbat.py modified by Andy Eck to fix issue of deprecated 'iteritems' function that was removed in pandas 1.5.0
+
 """
 import pandas as pd
 import patsy
