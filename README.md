@@ -3,6 +3,13 @@ Wrapper for covbat
 
 Wrapper to run execute the covbat.py script in MATLAB
 
+Adapted from
+https://github.com/andy1764/CovBat_Harmonization/tree/master/Python
+
+with modification to correct deprecated 'iteritems' method.
+
+# License
+Artistic License 2.0
 
 
 ## Setup:
