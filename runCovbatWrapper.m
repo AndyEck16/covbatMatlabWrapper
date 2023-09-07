@@ -253,9 +253,9 @@ end
 
 function fcDataFlat = reshapeSquareFcIntoFlat(sqFcData)
 
-    [numEdges, ~, numSubj] = size(sqFcData);
-    tempOnesMtxOneSubj = ones(numEdges, numEdges);
-    idxOfLowerTri = find(tril(tempOnesMtxOneSubj,-1));
+    [numROI, ~, numSubj] = size(sqFcData);
+    tempOnesMtxOneSubj = ones(numROI, numROI);
+    idxOfLowerTri = find(tril(tempOnesMtxOneSubj));
     
     numUniqueEdgeCombos = length(idxOfLowerTri);
     
@@ -265,7 +265,24 @@ function fcDataFlat = reshapeSquareFcIntoFlat(sqFcData)
         fcDataFlat(subjIdx,:) = thisSubjFc(idxOfLowerTri);
     end
 
+end
 
+function squareFc = reshapeFlatFcIntoSquares(flatFc)
+    [numSubj, numFcEdges] = size(flatFc);
+    numROI = (-1 + sqrt(1 + 8*numFcEdges)) / 2;
+    
+    squareFc = zeros(numROI, numROI, numSubj);
+    
+    index_matrix = tril(ones(numROI));
+    index_matrix(index_matrix>0) = 1:numFcEdges;
+    
+    for rowIdx = 1:numROI
+        for colIdx = 1:rowIdx
+            flatIdx = index_matrix(rowIdx,colIdx);
+            squareFc(rowIdx, colIdx, :) = flatFc(:,flatIdx);
+            squareFc(colIdx, rowIdx, :) = flatFc(:,flatIdx);
+        end
+    end
 end
 
 function outStr = cellStrArray2SingleString(inCellArr)
@@ -364,19 +381,7 @@ function writeCovBatCovariateInputTxtFile(fName, covarTbl)
 
 end
 
-function squareFc = reshapeFlatFcIntoSquares(flatFc)
-    [numSubj, numFcEdges] = size(flatFc);
-    fcEdgeSize = (1 + sqrt(1 + 8*numFcEdges)) / 2;
-    
-    fcTriMtx = nla.TriMatrix(fcEdgeSize);
-    
-    fcTriMtx.v = flatFc';
-    squareFc = fcTriMtx.asMatrix();
-    
-    for i = 1:numSubj
-        squareFc(:,:,i) = fullSquareFromLowerTriangleAndNans(squareFc(:,:,i));
-    end
-end
+
 
 function outSquare = fullSquareFromLowerTriangleAndNans(inSquare)
     inSquareNoNans = inSquare;
