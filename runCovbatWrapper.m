@@ -64,8 +64,11 @@ function fcDataPostCovbatSquare = runCovbatWrapper(inFcData, covariateTable, bat
     
     %% Run Python covbat script on input files and designated batch / model strings 
     %system('pip install patsy');
+    [thisFileDir, ~, ~] = fileparts(mfilename('fullpath'));
+    pyFuncFullPath = fullfile(thisFileDir,'covbatScript.py');
+    
     colsInModelThatAreNumeric_string = cellStrArray2SingleString(colsInModelThatAreNumeric);
-    runCmdWithModelStr = sprintf("python3 covbatScript.py ""%s"" ""%s"" ""%s""", batchColNameStr, modelString, colsInModelThatAreNumeric_string);
+    runCmdWithModelStr = sprintf("python3 ""%s"" ""%s"" ""%s"" ""%s""", pyFuncFullPath, batchColNameStr, modelString, colsInModelThatAreNumeric_string);
     anyErr = system(runCmdWithModelStr);
     if anyErr
         return;
@@ -81,6 +84,11 @@ function fcDataPostCovbatSquare = runCovbatWrapper(inFcData, covariateTable, bat
 
     fcDataPostCovbatSquare = reshapeFlatFcIntoSquares(fcDataPostCovbatMtx);
     
+    %% Delete temp files made
+    
+    delete(fullfile(tempFileFolderName,'tempfcData.txt'));
+    delete(fullfile(tempFileFolderName,'covarTbl.txt'));
+    delete(fullfile(tempFileFolderName,'matlabCovBat_FC_output.txt'));
     
 
 
