@@ -22,6 +22,9 @@ modelStr = sys.argv[2]
 numerColNameStr = sys.argv[3]
 numerColName = [x.strip() for x in numerColNameStr.split(",")]
 
+if (len(numerColName)==1) & (numerColName[0]=='none'):
+    numerColName = []
+
 covTbl = pd.read_table(os.path.join('.', 'tempCovbatFiles', 'covarTbl.txt'), index_col=0)
 fcDat = pd.read_table(os.path.join('.', 'tempCovbatFiles', 'tempfcData.txt'), index_col=0)
 

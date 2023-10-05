@@ -67,7 +67,11 @@ function fcDataPostCovbatSquare = runCovbatWrapper(inFcData, covariateTable, bat
     [thisFileDir, ~, ~] = fileparts(mfilename('fullpath'));
     pyFuncFullPath = fullfile(thisFileDir,'covbatScript.py');
     
-    colsInModelThatAreNumeric_string = cellStrArray2SingleString(colsInModelThatAreNumeric);
+    if ~isempty(colsInModelThatAreNumeric)
+        colsInModelThatAreNumeric_string = cellStrArray2SingleString(colsInModelThatAreNumeric);
+    else
+        colsInModelThatAreNumeric_string = 'none';
+    end
     runCmdWithModelStr = sprintf("python3 ""%s"" ""%s"" ""%s"" ""%s""", pyFuncFullPath, batchColNameStr, modelString, colsInModelThatAreNumeric_string);
     anyErr = system(runCmdWithModelStr);
     if anyErr
