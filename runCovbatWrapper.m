@@ -282,7 +282,6 @@ function fcDataFlat = reshapeSquareFcIntoFlat(sqFcData)
 
     [numROI, ~, numSubj] = size(sqFcData);
     tempOnesMtxOneSubj = ones(numROI, numROI);
-    %idxOfLowerTri = find(tril(tempOnesMtxOneSubj));
     idxOfLowerTri = find(tril(tempOnesMtxOneSubj,-1));
     
     numUniqueEdgeCombos = length(idxOfLowerTri);
