@@ -30,7 +30,9 @@ function fcDataPostCovbatSquare = runCovbatWrapper(inFcData, covariateTable, bat
 
     % Make copy of covar table that replaces all illegal characters that
     % will throw errors in covbat py script
-    [cleanCovarTbl, illegalCharsFound] = removeIllegalCharactersFromCovarTbl(covariateTable);
+    
+    %[cleanCovarTbl, illegalCharsFound] = removeIllegalCharactersFromCovarTbl(covariateTable);
+    illegalCharsFound = false;
     
     if illegalCharsFound && SHOW_WARNING_PROMPTS
         warningPromptAnswer = continueIfIllegalCharsPrompt();
@@ -49,7 +51,20 @@ function fcDataPostCovbatSquare = runCovbatWrapper(inFcData, covariateTable, bat
     
     errorIfUniqueSubjectsInBatch(subjIsUniqueInBatchFlag, batchColNameStr)
     
-        
+    %% Make new site_id_column where sites go from 1:num_sites without gaps
+    unqBatchColName = 'site_id_unq_no_gaps_for_covbat';
+    
+    allSites = covariateTable.(batchColNameStr);
+    allUnqSites = unique(allSites);
+    numSubj = size(covariateTable,1);
+    site_tbl = table(zeros(numSubj,1),'VariableNames',{unqBatchColName});
+    for siteIdx = 1:length(allUnqSites)
+        thisSiteId = allUnqSites(siteIdx);
+        subjsThisSite = (allSites == thisSiteId);
+        site_tbl.(unqBatchColName)(subjsThisSite) = siteIdx;
+    end
+    covariateTable = [covariateTable, site_tbl];
+    
     
     %% Generate covbat input files
     tempFileFolderName = 'tempCovbatFiles';
@@ -72,7 +87,7 @@ function fcDataPostCovbatSquare = runCovbatWrapper(inFcData, covariateTable, bat
     else
         colsInModelThatAreNumeric_string = 'none';
     end
-    runCmdWithModelStr = sprintf("python3 ""%s"" ""%s"" ""%s"" ""%s""", pyFuncFullPath, batchColNameStr, modelString, colsInModelThatAreNumeric_string);
+    runCmdWithModelStr = sprintf("python3 ""%s"" ""%s"" ""%s"" ""%s""", pyFuncFullPath, unqBatchColName, modelString, colsInModelThatAreNumeric_string);
     anyErr = system(runCmdWithModelStr);
     if anyErr
         return;
@@ -267,7 +282,8 @@ function fcDataFlat = reshapeSquareFcIntoFlat(sqFcData)
 
     [numROI, ~, numSubj] = size(sqFcData);
     tempOnesMtxOneSubj = ones(numROI, numROI);
-    idxOfLowerTri = find(tril(tempOnesMtxOneSubj));
+    %idxOfLowerTri = find(tril(tempOnesMtxOneSubj));
+    idxOfLowerTri = find(tril(tempOnesMtxOneSubj,-1));
     
     numUniqueEdgeCombos = length(idxOfLowerTri);
     
@@ -281,15 +297,15 @@ end
 
 function squareFc = reshapeFlatFcIntoSquares(flatFc)
     [numSubj, numFcEdges] = size(flatFc);
-    numROI = (-1 + sqrt(1 + 8*numFcEdges)) / 2;
+    numROI = (1 + sqrt(1 + 8*numFcEdges)) / 2;
     
     squareFc = zeros(numROI, numROI, numSubj);
     
-    index_matrix = tril(ones(numROI));
+    index_matrix = tril(ones(numROI),-1);
     index_matrix(index_matrix>0) = 1:numFcEdges;
     
     for rowIdx = 1:numROI
-        for colIdx = 1:rowIdx
+        for colIdx = 1:(rowIdx-1)
             flatIdx = index_matrix(rowIdx,colIdx);
             squareFc(rowIdx, colIdx, :) = flatFc(:,flatIdx);
             squareFc(colIdx, rowIdx, :) = flatFc(:,flatIdx);
