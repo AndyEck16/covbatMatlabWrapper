@@ -1,11 +1,14 @@
 # covbatMatlabWrapper
-Wrapper for covbat
+Wrapper for covbat library
 
-Wrapper to run execute the covbat.py script in MATLAB
+Covbat is intended to correct for batch effects in functional connectivity data. Specifically, it is intended to remove scanner specific effects from functional connectivity data, so that effects of other covariates that may correlate with site or scanner are not masked by scanner effects.
 
-Adapted from
+The covariates themselves are not altered by running this wrapper, only the FC data is.
+
+Wrapper to covbat.py script in MATLAB.
+
+covbat.py script based from
 https://github.com/andy1764/CovBat_Harmonization/tree/master/Python
-
 with modification to correct deprecated 'iteritems' method.
 
 # License
