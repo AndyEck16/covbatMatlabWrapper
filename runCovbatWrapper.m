@@ -26,6 +26,9 @@ function fcDataPostCovbatSquare = runCovbatWrapper(inFcData, covariateTable, bat
 %    newCovarTbl - copy of 'inCovarTbl' filtered to only have subjects that
 %                  were included in the covbat analysis
 %
+    
+    PYTHON_ENV_PATH = getPathToPythonEnv();
+    
     SHOW_WARNING_PROMPTS = true;
 
     % Make copy of covar table that replaces all illegal characters that
@@ -87,7 +90,7 @@ function fcDataPostCovbatSquare = runCovbatWrapper(inFcData, covariateTable, bat
     else
         colsInModelThatAreNumeric_string = 'none';
     end
-    runCmdWithModelStr = sprintf("python3 ""%s"" ""%s"" ""%s"" ""%s""", pyFuncFullPath, unqBatchColName, modelString, colsInModelThatAreNumeric_string);
+    runCmdWithModelStr = sprintf("""%s"" ""%s"" ""%s"" ""%s"" ""%s""", PYTHON_ENV_PATH, pyFuncFullPath, unqBatchColName, modelString, colsInModelThatAreNumeric_string);
     anyErr = system(runCmdWithModelStr);
     if anyErr
         return;
@@ -408,6 +411,31 @@ function writeCovBatCovariateInputTxtFile(fName, covarTbl)
 
 end
 
+function pathToPythonEnv = getPathToPythonEnv()
+
+    %If you made a virtual python environment, put the path to it's python3 file below.
+    %Usually found in .../pathToPythonEnv/bin/python3.
+    %To return to default python3, change this variable to 'python3'
+    PATH_OF_YOUR_NEW_PYTHON_ENV = 'python3'; %EDIT here with path to your python environment's python3 exe
+        
+    %make sure this is a valid python env
+    runCmdToGetPyVer = sprintf("""%s"" --version", PATH_OF_YOUR_NEW_PYTHON_ENV);
+    cmdOutput = system(runCmdToGetPyVer);
+
+    if cmdOutput == 1
+        %getting python version produced error. Error and inform user
+        pathToPythonEnv = 0;
+        error(['\n\nUnable to validate python3 version at %s\n',...
+                'Please confirm the PATH_OF_YOUR_NEW_PYTHON_ENV variable in\n',...
+                'runCovbatWrapper.m''s function ''getPathToPythonEnv''\n',... 
+                'is a path to a valid python3 install'],...
+                PATH_OF_YOUR_NEW_PYTHON_ENV);
+    else
+        pathToPythonEnv = PATH_OF_YOUR_NEW_PYTHON_ENV;
+    end
+        
+
+end
 
 
 function outSquare = fullSquareFromLowerTriangleAndNans(inSquare)

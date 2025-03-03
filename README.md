@@ -16,10 +16,14 @@ Artistic License 2.0
 
 
 ## Setup:
+This script requires specific versions of certain libraries.
 Install python3 on your machine (tested with Python 3.8)
-pip install pandas (if necessary)
-pip install -U scikit-learn (if necessary)
-pip install patsy (if necessary)
+Create a virtual environment, activate it, and install the following libraries/versions:
+pip install pandas==2.0.3
+pip install -U scikit-learn==1.3.0
+pip install patsy==0.5.3
+
+Later versions of these packages may break the script, so be sure to get those particular versions for best stability
 
 ## Contents:
 covbat.py: Modified version of covbat python library
